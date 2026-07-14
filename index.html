@@ -35,7 +35,11 @@
       <main class="main-content">
         <!-- Lesson Selector -->
         <section class="lesson-selector card" aria-label="단원 선택">
-          <h2 class="section-label">단원 선택</h2>
+          <button class="lesson-selector-toggle" id="lesson-selector-toggle" aria-expanded="true">
+            <span class="section-label">단원 선택</span>
+            <span class="lesson-current-name" id="lesson-current-name"></span>
+            <span class="toggle-chevron">▼</span>
+          </button>
           <div id="lesson-buttons" class="lesson-buttons">
             <!-- Rendered by JS -->
           </div>

@@ -75,6 +75,8 @@ const $ = (sel: string) => document.querySelector(sel)!;
 
 const els = {
   lessonButtons: () => $('#lesson-buttons') as HTMLElement,
+  lessonSelectorToggle: () => $('#lesson-selector-toggle') as HTMLButtonElement,
+  lessonCurrentName: () => $('#lesson-current-name') as HTMLElement,
   sectionTabs: () => $('#section-tabs') as HTMLElement,
   sectionTabsContainer: () => $('#section-tabs-container') as HTMLElement,
   progressContainer: () => $('#progress-container') as HTMLElement,
@@ -118,6 +120,10 @@ function getPassageForCurrentQuestion(): Passage | undefined {
 function renderLessonButtons(): void {
   const container = els.lessonButtons();
   const lessons = state.lessons;
+  const currentLesson = getCurrentLesson();
+
+  // Update current name display
+  els.lessonCurrentName().textContent = currentLesson ? currentLesson.title : '';
 
   container.innerHTML = lessons
     .map(
@@ -144,9 +150,33 @@ function renderLessonButtons(): void {
         }
         state.answers.clear();
         state.currentQuestionIndex = 0;
+        // Auto-collapse after selection
+        collapseLessonSelector();
         renderAll();
       }
     });
+  });
+}
+
+function collapseLessonSelector(): void {
+  const toggle = els.lessonSelectorToggle();
+  const buttons = els.lessonButtons();
+  buttons.classList.add('collapsed');
+  toggle.setAttribute('aria-expanded', 'false');
+}
+
+function setupLessonSelectorToggle(): void {
+  const toggle = els.lessonSelectorToggle();
+  toggle.addEventListener('click', () => {
+    const buttons = els.lessonButtons();
+    const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+    if (isExpanded) {
+      buttons.classList.add('collapsed');
+      toggle.setAttribute('aria-expanded', 'false');
+    } else {
+      buttons.classList.remove('collapsed');
+      toggle.setAttribute('aria-expanded', 'true');
+    }
   });
 }
 
@@ -840,6 +870,7 @@ function init(): void {
   }
   renderAll();
   setupKeyboardNav();
+  setupLessonSelectorToggle();
 }
 
 // Wait for DOM

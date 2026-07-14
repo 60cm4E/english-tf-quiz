@@ -238,7 +238,54 @@ body::before {
 .lesson-selector {
   text-align: center;
   flex-shrink: 0;
+  padding: 0;
+}
+
+.lesson-selector-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  width: 100%;
   padding: var(--space-sm) var(--space-md);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: color var(--transition-fast);
+}
+
+.lesson-selector-toggle:hover {
+  color: var(--text-secondary);
+}
+
+.lesson-selector-toggle .section-label {
+  margin-bottom: 0;
+}
+
+.lesson-current-name {
+  font-family: var(--font-body-ko);
+  font-weight: 500;
+  font-size: 0.8rem;
+  color: var(--primary);
+  display: none;
+}
+
+.lesson-selector-toggle[aria-expanded="false"] .lesson-current-name {
+  display: inline;
+}
+
+.lesson-selector-toggle[aria-expanded="false"] .section-label {
+  display: none;
+}
+
+.toggle-chevron {
+  font-size: 0.6rem;
+  transition: transform var(--transition-base);
+}
+
+.lesson-selector-toggle[aria-expanded="false"] .toggle-chevron {
+  transform: rotate(-90deg);
 }
 
 .section-label {
@@ -256,6 +303,17 @@ body::before {
   flex-wrap: wrap;
   gap: var(--space-sm);
   justify-content: center;
+  max-height: 200px;
+  overflow: hidden;
+  transition: max-height var(--transition-slow), padding var(--transition-slow), opacity var(--transition-base);
+  padding: 0 var(--space-md) var(--space-sm);
+  opacity: 1;
+}
+
+.lesson-buttons.collapsed {
+  max-height: 0;
+  padding: 0 var(--space-md);
+  opacity: 0;
 }
 
 .lesson-btn {
