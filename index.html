@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="중학교 3학년 동아(윤정미) 영어 교과서 내용이해 True/False 퀴즈" />
+    <meta name="keywords" content="영어, 중3, 동아, 윤정미, T/F, 퀴즈, 내용이해" />
+    <meta name="theme-color" content="#0a0e1a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>영어 내용이해 T/F 퀴즈 | 중3 동아(윤정미)</title>
+  </head>
+  <body>
+    <div id="app">
+      <!-- ===== Header ===== -->
+      <header class="app-header">
+        <div class="header-glow"></div>
+        <div class="header-content">
+          <h1 class="app-title">영어 내용이해 T/F 퀴즈</h1>
+          <p class="app-subtitle">중3 동아(윤정미)</p>
+        </div>
+      </header>
+
+      <!-- ===== Main Content ===== -->
+      <main class="main-content">
+        <!-- Lesson Selector -->
+        <section class="lesson-selector card" aria-label="단원 선택">
+          <h2 class="section-label">단원 선택</h2>
+          <div id="lesson-buttons" class="lesson-buttons">
+            <!-- Rendered by JS -->
+          </div>
+        </section>
+
+        <!-- Section Tabs -->
+        <nav class="section-tabs card" id="section-tabs-container" aria-label="섹션 탭">
+          <div class="tabs-track" id="section-tabs">
+            <!-- Rendered by JS -->
+          </div>
+        </nav>
+
+        <!-- Progress Bar -->
+        <div class="progress-container card" id="progress-container">
+          <div class="progress-info">
+            <span class="progress-label">진행률</span>
+            <span class="progress-count" id="progress-count">0 / 0</span>
+          </div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="progress-bar"></div>
+          </div>
+        </div>
+
+        <!-- Passage Display -->
+        <section class="passage-area" id="passage-area" aria-label="지문">
+          <!-- Rendered by JS -->
+        </section>
+
+        <!-- Quiz Questions -->
+        <section class="quiz-area" id="quiz-area" aria-label="퀴즈">
+          <!-- Rendered by JS -->
+        </section>
+
+        <!-- Results Summary -->
+        <section class="results-area" id="results-area" aria-label="결과">
+          <!-- Rendered by JS -->
+        </section>
+      </main>
+
+      <!-- ===== Footer ===== -->
+      <footer class="app-footer">
+        <div class="footer-content">
+          <p class="footer-text">© 2026 영어 내용이해 T/F 퀴즈</p>
+          <p class="footer-sub">학습 목적으로 제작되었습니다</p>
+        </div>
+      </footer>
+
+      <!-- Confetti Canvas (for perfect score) -->
+      <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
