@@ -76,14 +76,16 @@ export const lesson5 = {
           passageId: 'dialogue1-1',
           text: '그 소녀는 일주일에 두 번 농구를 한다.',
           textEn: 'The girl plays basketball twice a week.',
-          answer: false
+          answer: false,
+          evidence: '소녀는 "일주일에 한 번(once a week)" 한다고 했지, 두 번이 아닙니다.'
         },
         {
           id: 2,
           passageId: 'dialogue1-1',
           text: '소년은 그 소녀가 자신의 농구 동아리에 가입하면 농구를 더 자주 할 수 있을 거라고 생각한다.',
           textEn: 'The boy thinks if the girl joins his basketball club, she can play basketball more often.',
-          answer: true
+          answer: true,
+          evidence: '소년의 농구 동아리는 일주일에 세 번 하므로, 현재 한 번인 소녀가 가입하면 더 자주 할 수 있습니다.'
         },
 
         // Dialogue 2: Swimming (Kate)
@@ -92,21 +94,24 @@ export const lesson5 = {
           passageId: 'dialogue1-2',
           text: 'Kate는 일주일에 네 번보다 더 자주 수영한다.',
           textEn: 'Kate swims more than four times a week.',
-          answer: false
+          answer: false,
+          evidence: 'Kate는 "일주일에 네 번(four times a week)" 수영한다고 했지, 네 번보다 더 자주가 아닙니다.'
         },
         {
           id: 4,
           passageId: 'dialogue1-2',
           text: 'Kate와 소년은 오늘 함께 수영할 것이다.',
           textEn: 'Kate and the boy will swim together today.',
-          answer: true
+          answer: true,
+          evidence: '소년이 "오늘 같이 수영하면 재미있겠다(it\'ll be fun swimming together today)"라고 했습니다.'
         },
         {
           id: 5,
           passageId: 'dialogue1-2',
           text: 'Kate는 수영하기 전에 스트레칭을 하자고 제안한다.',
           textEn: 'Kate suggests stretching before swimming.',
-          answer: true
+          answer: true,
+          evidence: 'Kate가 "수영하기 전에 스트레칭을 하자(I suggest we do stretching exercises)"고 제안했습니다.'
         },
 
         // Dialogue 3: Bowling (Suji)
@@ -115,21 +120,24 @@ export const lesson5 = {
           passageId: 'dialogue1-3',
           text: '소년은 Suji가 얼마나 자주 볼링 레슨을 받는지 궁금해한다.',
           textEn: 'The boy wonders how often Suji takes bowling lessons.',
-          answer: true
+          answer: true,
+          evidence: '소년이 "볼링 레슨을 얼마나 자주 받아?(how often do you take bowling lessons?)"라고 물었습니다.'
         },
         {
           id: 7,
           passageId: 'dialogue1-3',
           text: 'Suji와 소년 둘 다 볼링을 매우 잘 친다.',
           textEn: 'Both Suji and the boy are very good bowlers.',
-          answer: false
+          answer: false,
+          evidence: 'Suji는 "아직 초보(just a beginner)"라고 했으므로 둘 다 잘하는 것은 아닙니다.'
         },
         {
           id: 8,
           passageId: 'dialogue1-3',
           text: '소년은 Suji가 더 무거운 공을 사용해야 한다고 생각한다.',
           textEn: 'The boy thinks Suji should use a heavier ball.',
-          answer: false
+          answer: false,
+          evidence: '소년은 "더 가벼운 공을 써(use a lighter ball)"라고 했지, 더 무거운 공이 아닙니다.'
         },
 
         // Dialogue 4: Running (Mina)
@@ -138,21 +146,24 @@ export const lesson5 = {
           passageId: 'dialogue1-4',
           text: 'Mina는 일주일에 7일 달리기를 한다.',
           textEn: 'Mina runs seven days a week.',
-          answer: true
+          answer: true,
+          evidence: 'Mina는 "매일(Every day)" 달리기한다고 했으므로 일주일에 7일입니다.'
         },
         {
           id: 10,
           passageId: 'dialogue1-4',
           text: '소년은 매일 Mina와 함께 달리고 싶어 한다.',
           textEn: 'The boy wants to run with Mina every day.',
-          answer: false
+          answer: false,
+          evidence: '소년은 "오늘(today)" 같이 달리고 싶다고 했지, 매일이 아닙니다.'
         },
         {
           id: 11,
           passageId: 'dialogue1-4',
           text: 'Mina는 소년에게 러닝화를 사라고 조언한다.',
           textEn: 'Mina advises the boy to buy running shoes.',
-          answer: false
+          answer: false,
+          evidence: 'Mina는 러닝화를 "신으라고(wear)" 했지, "사라고(buy)" 한 것이 아닙니다.'
         }
       ]
     },
@@ -198,56 +209,64 @@ export const lesson5 = {
           passageId: 'dialogue2-1',
           text: '소년은 수영 수업에 등록하기 위해 Sports World를 방문한다.',
           textEn: 'The boy visits Sports World to sign up for a swimming class.',
-          answer: true
+          answer: true,
+          evidence: '소년이 "수영 수업에 등록하러 왔다(I came to register for a swimming class)"고 했습니다.'
         },
         {
           id: 13,
           passageId: 'dialogue2-1',
           text: '소년은 이전에 수영 레슨을 받은 적이 있다.',
           textEn: 'The boy has taken swimming lessons before.',
-          answer: false
+          answer: false,
+          evidence: '소년이 "처음(first time)"이라고 했으므로 이전에 수영 레슨을 받은 적이 없습니다.'
         },
         {
           id: 14,
           passageId: 'dialogue2-1',
           text: '소년은 수영을 잘한다.',
           textEn: 'The boy is a good swimmer.',
-          answer: false
+          answer: false,
+          evidence: '소년은 "수영을 전혀 못 한다(I don\'t know how to swim at all)"고 했습니다.'
         },
         {
           id: 15,
           passageId: 'dialogue2-1',
           text: '소년은 주말에 일주일에 두 번 수영을 배우고 싶어 한다.',
           textEn: 'The boy wants to learn how to swim twice a week on weekends.',
-          answer: false
+          answer: false,
+          evidence: '소년은 주중(weekdays)에 수업을 듣고 싶다고 했지, 주말(weekends)이 아닙니다.'
         },
         {
           id: 16,
           passageId: 'dialogue2-1',
           text: '여자는 소년에게 초급 1반을 추천한다.',
           textEn: 'The woman suggests the Beginner 1 class to the boy.',
-          answer: false
+          answer: false,
+          evidence: '여자는 "초급 2반(Beginner 2 class)"을 추천했지, 초급 1반이 아닙니다.'
         },
         {
           id: 17,
           passageId: 'dialogue2-1',
           text: '초급 2반은 매주 화요일과 금요일에 수업이 있다.',
           textEn: 'The Beginner 2 class meets every Tuesday and Friday.',
-          answer: false
+          answer: false,
+          evidence: '초급 2반은 "화요일과 목요일(Tuesdays and Thursdays)"에 수업하지, 금요일이 아닙니다.'
         },
         {
           id: 18,
           passageId: 'dialogue2-1',
           text: '소년은 여자가 추천한 수업에 등록하고 싶어 한다.',
           textEn: 'The boy wants to register for the class the woman suggests.',
-          answer: true
+          answer: true,
+          evidence: '소년이 "그 수업에 등록하고 싶다(I\'d like to sign up for that class)"고 했습니다.'
         },
         {
           id: 19,
           passageId: 'dialogue2-1',
           text: '초급 2반에 10명보다 많은 사람이 등록할 수 있다.',
           textEn: 'It is possible for more than 10 people to sign up for the Beginner 2 class.',
-          answer: false
+          answer: false,
+          evidence: '수업 정원이 "10명(limit of 10 people)"이므로 10명 이상 등록은 불가능합니다.'
         }
       ]
     },
@@ -340,63 +359,72 @@ export const lesson5 = {
           passageId: 'reading1-1',
           text: '선수들은 스스로의 힘으로 트로피나 메달을 얻는다.',
           textEn: 'The players get a trophy or medal by themselves.',
-          answer: false
+          answer: false,
+          evidence: '선수들은 "혼자 힘으로 이기는 것이 아니다(they don\'t win on their own)"라고 했습니다.'
         },
         {
           id: 21,
           passageId: 'reading1-1',
           text: '선수들을 돕는 사람들은 선수들보다 더 중요하다.',
           textEn: 'People who help the players are more important than the players.',
-          answer: false
+          answer: false,
+          evidence: '도와주는 사람들은 선수들"만큼 중요하다(as important as)"고 했지, 더 중요하다고 하지 않았습니다.'
         },
         {
           id: 22,
           passageId: 'reading1-1',
           text: '페이서는 다른 주자들을 도울 만큼 충분한 경험을 가지고 있다.',
           textEn: 'Pacers have enough experience to help other runners.',
-          answer: true
+          answer: true,
+          evidence: '페이서들은 "경험이 풍부한 주자(experienced runners)"라고 했습니다.'
         },
         {
           id: 23,
           passageId: 'reading1-1',
           text: '한 경기에 한 명의 페이서만 허용된다.',
           textEn: 'Only one pacer is allowed in a race.',
-          answer: false
+          answer: false,
+          evidence: '한 경기에 "여러 명의 페이서가 있을 수 있다(There can be several pacers)"고 했습니다.'
         },
         {
           id: 24,
           passageId: 'reading1-1',
           text: '각 페이서는 서로 다른 속도로 달리지만 같은 시간에 경기를 마쳐야 한다.',
           textEn: 'Each pacer runs at different speeds but should finish the race at the same time.',
-          answer: false
+          answer: false,
+          evidence: '각 페이서는 "다른 속도로 달리고 다른 시간에 완주한다(finishes the race in different times)"고 했습니다.'
         },
         {
           id: 25,
           passageId: 'reading1-1',
           text: '페이서가 가지고 있는 깃발이나 풍선은 그들의 완주 시간을 보여 준다.',
           textEn: 'Flags or balloons that pacers have show their finish time.',
-          answer: true
+          answer: true,
+          evidence: '페이서들은 "완주 시간을 보여주는 깃발이나 풍선(flags or balloons showing their finish time)"을 가지고 있습니다.'
         },
         {
           id: 26,
           passageId: 'reading1-1',
           text: '주자들은 특정 페이서를 선택할 때 페이서의 완주 시간을 확인한다.',
           textEn: 'Runners check pacers\' finish time when they choose a certain pacer.',
-          answer: true
+          answer: true,
+          evidence: '주자들은 "목표 완주 시간에 따라 페이서를 선택한다(choose a pacer depending on their target finish time)"고 했습니다.'
         },
         {
           id: 27,
           passageId: 'reading1-1',
           text: '페이서는 주자가 가능한 한 빨리 마라톤을 완주할 수 있도록 시간을 계속 확인한다.',
           textEn: 'The pacer keeps checking the time so that the runner can finish the marathon as fast as possible.',
-          answer: false
+          answer: false,
+          evidence: '페이서는 주자가 "특정 시간에(in a particular time)" 완주하도록 돕지, 가능한 빨리 완주하도록 돕는 것이 아닙니다.'
         },
         {
           id: 28,
           passageId: 'reading1-1',
           text: '페이서와 주자 모두 이기기 위해 달린다.',
           textEn: 'Both pacers and runners run to win.',
-          answer: false
+          answer: false,
+          evidence: '"페이서들은 달리지만 이기기 위해 달리지 않는다(they don\'t run to win)"고 했습니다.'
         },
 
         // Part 2: Pit Crews
@@ -405,63 +433,72 @@ export const lesson5 = {
           passageId: 'reading1-2',
           text: '자동차 경주에서 운전자를 돕는 팀이 있다.',
           textEn: 'There is a team that helps the driver during car races.',
-          answer: true
+          answer: true,
+          evidence: '드라이버 뒤에 "팀이 있다(there is a team behind the driver)"고 했으며, 이를 피트 크루라 합니다.'
         },
         {
           id: 30,
           passageId: 'reading1-2',
           text: '경주 트랙을 피트라고 한다.',
           textEn: 'The race track is called a pit.',
-          answer: false
+          answer: false,
+          evidence: '피트는 "경주로 옆에 있는 장소(a place on the side of the race track)"이지, 경주로 자체가 아닙니다.'
         },
         {
           id: 31,
           passageId: 'reading1-2',
           text: '운전자는 경기 중에 멈출 수 없다.',
           textEn: 'Drivers can\'t stop during a race.',
-          answer: false
+          answer: false,
+          evidence: '드라이버들은 경주 중 "여러 번 멈춘다(stop there several times)"고 했습니다.'
         },
         {
           id: 32,
           passageId: 'reading1-2',
           text: '피트 크루는 경기 중에 자동차를 점검한다.',
           textEn: 'A pit crew checks the car during a race.',
-          answer: true
+          answer: true,
+          evidence: '피트 크루의 주요 업무는 "차를 점검하고 타이어를 교체하는 것(check the car and change the tires)"입니다.'
         },
         {
           id: 33,
           passageId: 'reading1-2',
           text: '타이어 교체는 피트 크루가 해야 하는 일 중 하나이다.',
           textEn: 'Changing the tires is one of the jobs a pit crew should do.',
-          answer: true
+          answer: true,
+          evidence: '타이어 교체는 피트 크루가 "해야 할 일(main job) 중 하나"입니다.'
         },
         {
           id: 34,
           passageId: 'reading1-2',
           text: '운전자가 오랫동안 경주하기 때문에 타이어가 쉽게 닳는다.',
           textEn: 'The tires wear out easily because drivers race for a long time.',
-          answer: false
+          answer: false,
+          evidence: '타이어가 쉽게 닳는 이유는 "고속 레이스(high speed race)" 때문이지, 오래 달려서가 아닙니다.'
         },
         {
           id: 35,
           passageId: 'reading1-2',
           text: '한 크루에 20명보다 많은 구성원이 있다.',
           textEn: 'There are more than 20 members on a crew.',
-          answer: false
+          answer: false,
+          evidence: '크루에 "최대 20명(as many as 20 members)"이라고 했으므로, 20명 초과가 아닙니다.'
         },
         {
           id: 36,
           passageId: 'reading1-2',
           text: '피트 크루의 일에는 완벽한 팀워크가 필요하다.',
           textEn: 'The job of the pit crew needs perfect teamwork.',
-          answer: true
+          answer: true,
+          evidence: '피트 크루는 "완벽한 조화(perfect harmony)"로 일해야 한다고 했습니다.'
         },
         {
           id: 37,
           passageId: 'reading1-2',
           text: '피트 크루는 경주 결과와 아무런 관련이 없다.',
           textEn: 'A pit crew has nothing to do with the results of a race.',
-          answer: false
+          answer: false,
+          evidence: '"경주는 피트에서 이긴다(Races are won in the pits)"는 말이 있으므로, 피트 크루는 경주 결과에 큰 영향을 미칩니다.'
         },
 
         // Part 3: Sherpas
@@ -470,63 +507,72 @@ export const lesson5 = {
           passageId: 'reading1-3',
           text: '셰르파라는 단어의 기원은 셰르파 부족이다.',
           textEn: 'The origin of the word Sherpa is the Sherpa tribe.',
-          answer: true
+          answer: true,
+          evidence: '"셰르파라는 단어는 셰르파 부족에서 유래했다(comes from the Sherpa tribe)"고 했습니다.'
         },
         {
           id: 39,
           passageId: 'reading1-3',
           text: '셰르파 부족은 네팔 서부 지역에 산다.',
           textEn: 'The Sherpa tribe lives in the western area of Nepal.',
-          answer: false
+          answer: false,
+          evidence: '셰르파 부족은 네팔의 "동쪽(eastern part)"에 살지, 서쪽이 아닙니다.'
         },
         {
           id: 40,
           passageId: 'reading1-3',
           text: '셰르파는 등반을 잘한다.',
           textEn: 'Sherpas are good climbers.',
-          answer: true
+          answer: true,
+          evidence: '셰르파들은 "좋은 등반 기술(good climbing skills)"을 가지고 있다고 했습니다.'
         },
         {
           id: 41,
           passageId: 'reading1-3',
           text: '셰르파는 에베레스트산 등반에 대해 잘 알고 있다.',
           textEn: 'Sherpas know about climbing Mount Everest.',
-          answer: true
+          answer: true,
+          evidence: '셰르파들은 "산을 잘 알고 있다(know their way around the mountains well)"고 했습니다.'
         },
         {
           id: 42,
           passageId: 'reading1-3',
           text: '셰르파는 높은 산에서 호흡하는 데 전혀 어려움이 없다.',
           textEn: 'Sherpas have no difficulty breathing high up in the mountain.',
-          answer: false
+          answer: false,
+          evidence: '셰르파들은 높은 곳에서 호흡에 "거의 어려움이 없다(little difficulty)"고 했지, 전혀 어려움이 없다(no difficulty)는 아닙니다.'
         },
         {
           id: 43,
           passageId: 'reading1-3',
           text: '셰르파는 사람들이 에베레스트산을 오르는 것을 돕기 위해 고용된다.',
           textEn: 'Sherpas are hired to help people to climb Mount Everest.',
-          answer: true
+          answer: true,
+          evidence: '등산가들이 "에베레스트 등반을 돕기 위해 셰르파를 고용하기 시작했다(hire Sherpas to help them climb)"고 했습니다.'
         },
         {
           id: 44,
           passageId: 'reading1-3',
           text: '셰르파는 등반가들이 에베레스트산 중턱에 도달할 수 있도록 이끈다.',
           textEn: 'Sherpas lead climbers so that they can reach the middle of Mount Everest.',
-          answer: false
+          answer: false,
+          evidence: '셰르파들은 등산가들을 산 "정상(top)"으로 이끌지, 중간이 아닙니다.'
         },
         {
           id: 45,
           passageId: 'reading1-3',
           text: '셰르파는 텐트를 치고 등반가들의 가방을 운반할 수 있다.',
           textEn: 'Sherpas can put up tents and carry climbers\' bags.',
-          answer: true
+          answer: true,
+          evidence: '셰르파들은 "텐트를 치고 등산가들의 가방을 나른다(put up tents and carry climbers\' bags)"고 했습니다.'
         },
         {
           id: 46,
           passageId: 'reading1-3',
           text: '사람들은 산 정상에서 셰르파와 등반가들의 사진을 자주 볼 수 있다.',
           textEn: 'People can often see a picture of Sherpas and the climbers at the top of the mountain.',
-          answer: false
+          answer: false,
+          evidence: '사람들은 보통 산 정상에서 "등산가들만의(only the climbers)" 사진을 본다고 했습니다.'
         }
       ]
     }

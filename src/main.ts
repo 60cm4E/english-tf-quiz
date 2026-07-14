@@ -17,6 +17,7 @@ interface Question {
   text: string;
   textEn?: string;
   answer: boolean;
+  evidence?: string;
 }
 
 interface Section {
@@ -42,8 +43,12 @@ interface UserAnswer {
 interface AppState {
   currentLessonId: number;
   currentSectionId: string;
+  currentQuestionIndex: number;
   answers: Map<number, UserAnswer>;
   lessons: Lesson[];
+  passageLang: 'en' | 'ko' | 'both';
+  passageExpanded: boolean;
+  autoAdvanceTimer: ReturnType<typeof setTimeout> | null;
 }
 
 // ============================================================
@@ -52,8 +57,12 @@ interface AppState {
 const state: AppState = {
   currentLessonId: 5,
   currentSectionId: '',
+  currentQuestionIndex: 0,
   answers: new Map(),
-  lessons: [lesson5],
+  lessons: [lesson5 as Lesson],
+  passageLang: 'both',
+  passageExpanded: false,
+  autoAdvanceTimer: null,
 };
 
 // ============================================================
@@ -92,6 +101,14 @@ function escapeHtml(str: string): string {
   return div.innerHTML;
 }
 
+function getPassageForCurrentQuestion(): Passage | undefined {
+  const section = getCurrentSection();
+  if (!section) return undefined;
+  const q = section.questions[state.currentQuestionIndex];
+  if (!q) return undefined;
+  return section.passages.find((p) => p.id === q.passageId);
+}
+
 // ============================================================
 // Render: Lesson Buttons
 // ============================================================
@@ -123,6 +140,7 @@ function renderLessonButtons(): void {
           state.currentSectionId = lesson.sections[0].id;
         }
         state.answers.clear();
+        state.currentQuestionIndex = 0;
         renderAll();
       }
     });
@@ -160,18 +178,18 @@ function renderSectionTabs(): void {
       if (id !== state.currentSectionId) {
         state.currentSectionId = id;
         state.answers.clear();
+        state.currentQuestionIndex = 0;
+        state.passageExpanded = false;
         renderAll();
-        // Scroll to passage area
-        els.passageArea().scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     });
   });
 }
 
 // ============================================================
-// Render: Passages
+// Render: Passage (collapsible accordion)
 // ============================================================
-function renderPassages(): void {
+function renderPassage(): void {
   const section = getCurrentSection();
   const container = els.passageArea();
 
@@ -180,44 +198,79 @@ function renderPassages(): void {
     return;
   }
 
-  container.innerHTML = section.passages
-    .map(
-      (passage, idx) => `
-    <div class="passage-card card-enter" style="animation-delay: ${idx * 100}ms">
-      <div class="passage-title">
-        <span class="icon">📖</span>
-        ${escapeHtml(passage.title)}
-      </div>
-      <div class="passage-block">
-        <div class="passage-lang-label">
-          <span class="dot dot-en"></span> English
+  // Find passage relevant to current question
+  const passage = getPassageForCurrentQuestion();
+  if (!passage) {
+    container.innerHTML = '';
+    return;
+  }
+
+  const langBtnEn = state.passageLang === 'en' || state.passageLang === 'both' ? 'active' : '';
+  const langBtnKo = state.passageLang === 'ko' || state.passageLang === 'both' ? 'active' : '';
+
+  container.innerHTML = `
+    <div class="passage-accordion">
+      <button class="passage-toggle" id="passage-toggle" aria-expanded="${state.passageExpanded}">
+        <span class="passage-toggle-icon">📖</span>
+        <span class="passage-toggle-title">${escapeHtml(passage.title)}</span>
+        <span class="passage-toggle-arrow ${state.passageExpanded ? 'expanded' : ''}">▼</span>
+      </button>
+      <div class="passage-collapsible ${state.passageExpanded ? 'expanded' : ''}" id="passage-collapsible">
+        <div class="passage-lang-toggle">
+          <button class="lang-btn ${langBtnEn}" data-lang="en">English</button>
+          <button class="lang-btn ${langBtnKo}" data-lang="ko">한국어</button>
+          <button class="lang-btn ${state.passageLang === 'both' ? 'active' : ''}" data-lang="both">Both</button>
         </div>
-        <div class="passage-text-en">${escapeHtml(passage.text)}</div>
-      </div>
-      <div class="passage-divider"></div>
-      <div class="passage-block">
-        <div class="passage-lang-label">
-          <span class="dot dot-ko"></span> 한국어
+        <div class="passage-scroll-container">
+          ${state.passageLang === 'en' || state.passageLang === 'both' ? `
+            <div class="passage-block">
+              <div class="passage-lang-label">
+                <span class="dot dot-en"></span> English
+              </div>
+              <div class="passage-text-en">${escapeHtml(passage.text)}</div>
+            </div>
+          ` : ''}
+          ${(state.passageLang === 'both') ? '<div class="passage-divider"></div>' : ''}
+          ${state.passageLang === 'ko' || state.passageLang === 'both' ? `
+            <div class="passage-block">
+              <div class="passage-lang-label">
+                <span class="dot dot-ko"></span> 한국어
+              </div>
+              <div class="passage-text-ko">${escapeHtml(passage.textKo)}</div>
+            </div>
+          ` : ''}
         </div>
-        <div class="passage-text-ko">${escapeHtml(passage.textKo)}</div>
       </div>
     </div>
-  `
-    )
-    .join('');
+  `;
 
-  // Animate entrance
-  requestAnimationFrame(() => {
-    container.querySelectorAll('.card-enter').forEach((card, idx) => {
-      setTimeout(() => card.classList.add('visible'), idx * 120);
+  // Toggle event
+  document.getElementById('passage-toggle')?.addEventListener('click', () => {
+    state.passageExpanded = !state.passageExpanded;
+    const collapsible = document.getElementById('passage-collapsible');
+    const arrow = container.querySelector('.passage-toggle-arrow');
+    if (collapsible) {
+      collapsible.classList.toggle('expanded', state.passageExpanded);
+    }
+    if (arrow) {
+      arrow.classList.toggle('expanded', state.passageExpanded);
+    }
+    document.getElementById('passage-toggle')?.setAttribute('aria-expanded', String(state.passageExpanded));
+  });
+
+  // Language toggle
+  container.querySelectorAll('.lang-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.passageLang = (btn as HTMLElement).dataset.lang as 'en' | 'ko' | 'both';
+      renderPassage();
     });
   });
 }
 
 // ============================================================
-// Render: Questions
+// Render: Question Card (single card carousel)
 // ============================================================
-function renderQuestions(): void {
+function renderQuestionCard(direction: 'none' | 'left' | 'right' = 'none'): void {
   const section = getCurrentSection();
   const container = els.quizArea();
 
@@ -226,64 +279,124 @@ function renderQuestions(): void {
     return;
   }
 
+  const questions = section.questions;
+  const idx = state.currentQuestionIndex;
+  const q = questions[idx];
+  const total = questions.length;
+  const ans = state.answers.get(q.id);
+
+  // Animation class — skip animation for already-answered cards
+  let animClass = '';
+  if (!ans) {
+    if (direction === 'left') animClass = 'slide-in-right';
+    else if (direction === 'right') animClass = 'slide-in-left';
+    else animClass = 'slide-fade-in';
+  } else {
+    animClass = 'slide-fade-in';
+  }
+
   container.innerHTML = `
-    <h3 class="quiz-section-title">📝 퀴즈</h3>
-    ${section.questions
-      .map(
-        (q, idx) => `
-      <div
-        class="question-card card-enter ${getQuestionStateClass(q.id)}"
-        data-question-id="${q.id}"
-        id="question-${q.id}"
-        style="animation-delay: ${(idx + 1) * 100}ms"
-      >
-        <div class="question-header">
+    <div class="question-slider">
+      <div class="question-card-slide ${animClass} ${ans ? 'no-entry-anim' : ''} ${getQuestionStateClass(q.id)}" id="question-slide">
+        <div class="question-card-header">
           <span class="question-number">Q${q.id}</span>
-          <div>
-            <div class="question-text">${escapeHtml(q.text)}</div>
-            ${q.textEn ? `<div class="question-text-en">${escapeHtml(q.textEn)}</div>` : ''}
-          </div>
+          <span class="question-counter">${idx + 1} / ${total}</span>
         </div>
+
+        <div class="question-body">
+          <div class="question-text">${escapeHtml(q.text)}</div>
+          ${q.textEn ? `<div class="question-text-en">${escapeHtml(q.textEn)}</div>` : ''}
+        </div>
+
         <div class="tf-buttons">
           <button
             class="tf-btn tf-btn-true ${getTfBtnClass(q.id, true, q.answer)}"
-            data-question-id="${q.id}"
             data-answer="true"
-            ${state.answers.has(q.id) ? 'disabled' : ''}
+            ${ans ? 'disabled' : ''}
           >
             ${getTfBtnContent(q.id, true, q.answer)}
           </button>
           <button
             class="tf-btn tf-btn-false ${getTfBtnClass(q.id, false, q.answer)}"
-            data-question-id="${q.id}"
             data-answer="false"
-            ${state.answers.has(q.id) ? 'disabled' : ''}
+            ${ans ? 'disabled' : ''}
           >
             ${getTfBtnContent(q.id, false, q.answer)}
           </button>
         </div>
-        ${renderFeedback(q.id, q.answer)}
+
+        ${renderFeedback(q.id, q)}
       </div>
-    `
-      )
-      .join('')}
+
+      <div class="slider-navigation">
+        <button class="nav-arrow nav-prev ${idx === 0 ? 'disabled' : ''}" id="nav-prev" ${idx === 0 ? 'disabled' : ''} aria-label="이전 문제">
+          ◀
+        </button>
+        <div class="dot-indicators" id="dot-indicators">
+          ${questions.map((dq, di) => {
+            const dAns = state.answers.get(dq.id);
+            let dotClass = 'dot-indicator';
+            if (di === idx) dotClass += ' current';
+            if (dAns) dotClass += dAns.correct ? ' correct' : ' wrong';
+            return `<button class="${dotClass}" data-dot-index="${di}" aria-label="문제 ${di + 1}"></button>`;
+          }).join('')}
+        </div>
+        <button class="nav-arrow nav-next ${idx === total - 1 ? 'disabled' : ''}" id="nav-next" ${idx === total - 1 ? 'disabled' : ''} aria-label="다음 문제">
+          ▶
+        </button>
+      </div>
+    </div>
   `;
 
-  // Attach click handlers
+  // Attach T/F button handlers
   container.querySelectorAll('.tf-btn:not([disabled])').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const qId = Number((btn as HTMLElement).dataset.questionId!);
       const answer = (btn as HTMLElement).dataset.answer === 'true';
-      handleAnswer(qId, answer);
+      handleAnswer(q.id, answer);
     });
   });
 
-  // Animate entrance
-  requestAnimationFrame(() => {
-    container.querySelectorAll('.card-enter').forEach((card, idx) => {
-      setTimeout(() => card.classList.add('visible'), idx * 100);
+  // Nav arrow handlers
+  document.getElementById('nav-prev')?.addEventListener('click', () => {
+    if (state.currentQuestionIndex > 0) {
+      navigateTo(state.currentQuestionIndex - 1, 'right');
+    }
+  });
+  document.getElementById('nav-next')?.addEventListener('click', () => {
+    if (state.currentQuestionIndex < total - 1) {
+      navigateTo(state.currentQuestionIndex + 1, 'left');
+    }
+  });
+
+  // Dot click handlers
+  container.querySelectorAll('.dot-indicator').forEach((dot) => {
+    dot.addEventListener('click', () => {
+      const di = Number((dot as HTMLElement).dataset.dotIndex);
+      if (di !== state.currentQuestionIndex) {
+        navigateTo(di, di > state.currentQuestionIndex ? 'left' : 'right');
+      }
     });
   });
+
+  // Evidence toggle handler
+  const evidenceToggle = container.querySelector('.evidence-toggle-btn');
+  if (evidenceToggle) {
+    evidenceToggle.addEventListener('click', () => {
+      const content = container.querySelector('.evidence-content') as HTMLElement;
+      const btn = evidenceToggle as HTMLElement;
+      if (content) {
+        const isExpanded = content.classList.contains('expanded');
+        content.classList.toggle('expanded', !isExpanded);
+        btn.innerHTML = !isExpanded
+          ? '📖 정답 근거 숨기기 ▲'
+          : '📖 정답 근거 보기 ▼';
+        btn.setAttribute('aria-expanded', String(!isExpanded));
+      }
+    });
+  }
+
+  // Setup touch swipe
+  setupTouchSwipe(container);
 }
 
 function getQuestionStateClass(qId: number): string {
@@ -299,7 +412,6 @@ function getTfBtnClass(qId: number, btnValue: boolean, correctAnswer: boolean): 
   if (ans.userAnswer === btnValue) {
     return ans.correct ? 'selected-correct' : 'selected-wrong';
   }
-  // Show the correct answer button if user was wrong
   if (!ans.correct && btnValue === correctAnswer) {
     return 'was-correct';
   }
@@ -320,7 +432,7 @@ function getTfBtnContent(qId: number, btnValue: boolean, correctAnswer: boolean)
   return label;
 }
 
-function renderFeedback(qId: number, correctAnswer: boolean): string {
+function renderFeedback(qId: number, q: Question): string {
   const ans = state.answers.get(qId);
   if (!ans) return '';
 
@@ -332,12 +444,61 @@ function renderFeedback(qId: number, correctAnswer: boolean): string {
     `;
   }
 
+  const evidenceHtml = q.evidence
+    ? `
+      <button class="evidence-toggle-btn" aria-expanded="false">
+        📖 정답 근거 보기 ▼
+      </button>
+      <div class="evidence-content">
+        <div class="evidence-text">${escapeHtml(q.evidence)}</div>
+      </div>
+    `
+    : '';
+
   return `
     <div class="question-feedback feedback-wrong">
       <span class="feedback-icon">❌</span>
-      틀렸습니다. 정답은 <strong>${correctAnswer ? 'True' : 'False'}</strong> 입니다.
+      틀렸습니다. 정답은 <strong>${q.answer ? 'True' : 'False'}</strong> 입니다.
+      ${evidenceHtml}
     </div>
   `;
+}
+
+// ============================================================
+// Navigation
+// ============================================================
+function navigateTo(index: number, direction: 'left' | 'right'): void {
+  const section = getCurrentSection();
+  if (!section) return;
+  const total = section.questions.length;
+  if (index < 0 || index >= total) return;
+
+  // Cancel pending auto-advance
+  if (state.autoAdvanceTimer) {
+    clearTimeout(state.autoAdvanceTimer);
+    state.autoAdvanceTimer = null;
+  }
+
+  state.currentQuestionIndex = index;
+  renderQuestionCard(direction);
+  renderPassage();
+  updateProgress();
+}
+
+function findNextUnanswered(): number {
+  const section = getCurrentSection();
+  if (!section) return -1;
+  const questions = section.questions;
+
+  // Search forward from current
+  for (let i = state.currentQuestionIndex + 1; i < questions.length; i++) {
+    if (!state.answers.has(questions[i].id)) return i;
+  }
+  // Wrap around
+  for (let i = 0; i < state.currentQuestionIndex; i++) {
+    if (!state.answers.has(questions[i].id)) return i;
+  }
+  return -1;
 }
 
 // ============================================================
@@ -358,29 +519,100 @@ function handleAnswer(questionId: number, userAnswer: boolean): void {
     correct,
   });
 
-  // Re-render just the question card and progress
-  renderQuestions();
+  // Re-render card and progress
+  renderQuestionCard('none');
   updateProgress();
 
-  // Smooth scroll to next unanswered question or results
   const totalQuestions = section.questions.length;
   const answeredCount = state.answers.size;
 
   if (answeredCount >= totalQuestions) {
-    // All answered – show results
-    setTimeout(() => {
+    // All answered – show results after delay
+    state.autoAdvanceTimer = setTimeout(() => {
       showResults();
-    }, 600);
-  } else {
-    // Scroll to next unanswered
-    const nextQ = section.questions.find((q) => !state.answers.has(q.id));
-    if (nextQ) {
-      setTimeout(() => {
-        const el = document.getElementById(`question-${nextQ.id}`);
-        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 400);
+    }, 1200);
+  } else if (correct) {
+    // Auto-advance only on CORRECT answers (1.5s delay)
+    const nextIdx = findNextUnanswered();
+    if (nextIdx >= 0) {
+      state.autoAdvanceTimer = setTimeout(() => {
+        navigateTo(nextIdx, nextIdx > state.currentQuestionIndex ? 'left' : 'right');
+      }, 1500);
     }
   }
+  // On WRONG answers: do NOT auto-advance, let user read evidence
+}
+
+// ============================================================
+// Touch Swipe
+// ============================================================
+function setupTouchSwipe(container: Element): void {
+  const el = container.querySelector('.question-card-slide') as HTMLElement;
+  if (!el) return;
+
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchEndX = 0;
+  let isSwiping = false;
+
+  el.addEventListener('touchstart', (e: TouchEvent) => {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+    isSwiping = true;
+  }, { passive: true });
+
+  el.addEventListener('touchmove', (e: TouchEvent) => {
+    if (!isSwiping) return;
+    const diffY = Math.abs(e.changedTouches[0].screenY - touchStartY);
+    const diffX = Math.abs(e.changedTouches[0].screenX - touchStartX);
+    // If vertical movement > horizontal, not a swipe
+    if (diffY > diffX) {
+      isSwiping = false;
+    }
+  }, { passive: true });
+
+  el.addEventListener('touchend', (e: TouchEvent) => {
+    if (!isSwiping) return;
+    touchEndX = e.changedTouches[0].screenX;
+    const diff = touchStartX - touchEndX;
+    const section = getCurrentSection();
+    if (!section) return;
+    const total = section.questions.length;
+
+    if (Math.abs(diff) > 50) {
+      if (diff > 0 && state.currentQuestionIndex < total - 1) {
+        // Swipe left → next
+        navigateTo(state.currentQuestionIndex + 1, 'left');
+      } else if (diff < 0 && state.currentQuestionIndex > 0) {
+        // Swipe right → prev
+        navigateTo(state.currentQuestionIndex - 1, 'right');
+      }
+    }
+    isSwiping = false;
+  }, { passive: true });
+}
+
+// ============================================================
+// Keyboard Navigation
+// ============================================================
+function setupKeyboardNav(): void {
+  document.addEventListener('keydown', (e: KeyboardEvent) => {
+    const section = getCurrentSection();
+    if (!section) return;
+    const total = section.questions.length;
+
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (state.currentQuestionIndex > 0) {
+        navigateTo(state.currentQuestionIndex - 1, 'right');
+      }
+    } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (state.currentQuestionIndex < total - 1) {
+        navigateTo(state.currentQuestionIndex + 1, 'left');
+      }
+    }
+  });
 }
 
 // ============================================================
@@ -431,37 +663,42 @@ function showResults(): void {
     title = '만점! 완벽합니다!';
   }
 
+  // Hide quiz area, show results
+  els.quizArea().innerHTML = '';
   const resultsArea = els.resultsArea();
   resultsArea.innerHTML = `
-    <div class="results-card">
-      <div class="results-emoji">${emoji}</div>
-      <div class="results-title">${title}</div>
-      <div class="results-score ${isPerfect ? 'perfect' : ''}">${correctCount} / ${total}</div>
-      <div class="results-percentage">${percentage}%</div>
+    <div class="results-overlay">
+      <div class="results-card">
+        <div class="results-emoji">${emoji}</div>
+        <div class="results-title">${title}</div>
+        <div class="results-score ${isPerfect ? 'perfect' : ''}">${correctCount} / ${total}</div>
+        <div class="results-percentage">${percentage}%</div>
 
-      ${
-        wrongAnswers.length > 0
-          ? `
-        <div class="wrong-answers-section">
-          <div class="wrong-answers-title">❌ 틀린 문제</div>
-          ${wrongAnswers
-            .map((q) => {
-              return `
-              <div class="wrong-answer-item">
-                <span class="q-num">Q${q.id}</span>
-                ${escapeHtml(q.text)}
-                <br />
-                <span class="correct-label">정답: ${q.answer ? 'True' : 'False'}</span>
-              </div>
-            `;
-            })
-            .join('')}
-        </div>
-      `
-          : ''
-      }
+        ${
+          wrongAnswers.length > 0
+            ? `
+          <div class="wrong-answers-section">
+            <div class="wrong-answers-title">❌ 틀린 문제</div>
+            ${wrongAnswers
+              .map((q) => {
+                return `
+                <div class="wrong-answer-item">
+                  <span class="q-num">Q${q.id}</span>
+                  ${escapeHtml(q.text)}
+                  <br />
+                  <span class="correct-label">정답: ${q.answer ? 'True' : 'False'}</span>
+                  ${q.evidence ? `<div class="wrong-evidence">${escapeHtml(q.evidence)}</div>` : ''}
+                </div>
+              `;
+              })
+              .join('')}
+          </div>
+        `
+            : ''
+        }
 
-      <button class="retry-btn" id="retry-btn">🔄 다시 풀기</button>
+        <button class="retry-btn" id="retry-btn">🔄 다시 풀기</button>
+      </div>
     </div>
   `;
 
@@ -469,11 +706,6 @@ function showResults(): void {
 
   // Attach retry handler
   document.getElementById('retry-btn')?.addEventListener('click', resetQuiz);
-
-  // Scroll to results
-  setTimeout(() => {
-    resultsArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 200);
 
   // Confetti on perfect score
   if (isPerfect) {
@@ -485,14 +717,17 @@ function showResults(): void {
 // Reset Quiz
 // ============================================================
 function resetQuiz(): void {
+  if (state.autoAdvanceTimer) {
+    clearTimeout(state.autoAdvanceTimer);
+    state.autoAdvanceTimer = null;
+  }
   state.answers.clear();
+  state.currentQuestionIndex = 0;
   els.resultsArea().classList.remove('visible');
   els.resultsArea().innerHTML = '';
-  renderQuestions();
+  renderQuestionCard('none');
+  renderPassage();
   updateProgress();
-
-  // Scroll to top of quiz
-  els.passageArea().scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // ============================================================
@@ -553,7 +788,7 @@ function launchConfetti(): void {
     particles.forEach((p) => {
       p.x += p.vx;
       p.y += p.vy;
-      p.vy += 0.04; // gravity
+      p.vy += 0.04;
       p.rotation += p.rotationSpeed;
 
       if (frame > MAX_FRAMES * 0.6) {
@@ -580,13 +815,16 @@ function launchConfetti(): void {
 // Render All
 // ============================================================
 function renderAll(): void {
+  // Clear results overlay first to prevent flash
+  const resultsArea = els.resultsArea();
+  resultsArea.classList.remove('visible');
+  resultsArea.innerHTML = '';
+  
   renderLessonButtons();
   renderSectionTabs();
-  renderPassages();
-  renderQuestions();
+  renderPassage();
+  renderQuestionCard('none');
   updateProgress();
-  els.resultsArea().classList.remove('visible');
-  els.resultsArea().innerHTML = '';
 }
 
 // ============================================================
@@ -598,6 +836,7 @@ function init(): void {
     state.currentSectionId = lesson.sections[0].id;
   }
   renderAll();
+  setupKeyboardNav();
 }
 
 // Wait for DOM
