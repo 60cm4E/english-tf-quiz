@@ -1,4 +1,5 @@
 import { lesson5 } from './data/lesson5';
+import { lesson6 } from './data/lesson6';
 import './style.css';
 
 // ============================================================
@@ -59,7 +60,7 @@ const state: AppState = {
   currentSectionId: '',
   currentQuestionIndex: 0,
   answers: new Map(),
-  lessons: [lesson5 as Lesson],
+  lessons: [lesson5 as Lesson, lesson6 as Lesson],
   passageLang: 'both',
   passageExpanded: false,
   autoAdvanceTimer: null,
